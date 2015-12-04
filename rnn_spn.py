@@ -75,8 +75,9 @@ from sys import platform as _platform
 if _platform == "linux" or _platform == "linux2":
     mnist_sequence = "mnist_sequence3_sample_8distortions_9x9.npz"
 
-    from lasagne.layers import dnn
-    conv = dnn.Conv2DDNNLayer
+#    from lasagne.layers import dnn
+#    conv = dnn.Conv2DDNNLayer
+    conv = lasagne.layers.Conv2DLayer
     pool = lasagne.layers.MaxPool2DLayer
 elif _platform == "darwin":
     mnist_sequence = "mnist_sequence3_sample_8distortions_9x9.npz"
