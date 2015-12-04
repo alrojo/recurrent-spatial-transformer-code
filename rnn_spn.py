@@ -6,6 +6,7 @@ from __future__ import division
 import numpy as np
 import theano.tensor as T
 import theano
+import string
 
 theano.config.floatX = 'float32'
 import lasagne
@@ -163,7 +164,8 @@ print l_conv1_out.output_shape
 print l_pool1_out.output_shape
 print l_pool2_out.output_shape
 print l_conv2_out.output_shape
-
+print l_conv2_out.output_shape
+print l_conv2_out.output_shape
 
 #print lasagne.layers.get_output(l_conv3_out, sym_x).eval({sym_x: Xt}).shape
 #assert False
@@ -178,6 +180,14 @@ l_lin_out = lasagne.layers.DenseLayer(
     name='class2',
     nonlinearity=lasagne.nonlinearities.softmax)
 l_out = l_lin_out
+
+all_layers = lasagne.layers.get_all_layers(l_out)
+num_params = lasagne.layers.count_params(l_out)
+print("  number of parameters: %d" % num_params)
+print("  layer output shapes:")
+for layer in all_layers:
+    name = string.ljust(layer.__class__.__name__, 32)
+    print("    %s %s" % (name, lasagne.layers.get_output_shape(layer)))
 
 output_train = lasagne.layers.get_output(
     l_out, sym_x, deterministic=False)
