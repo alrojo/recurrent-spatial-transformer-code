@@ -147,16 +147,25 @@ l_transform1 = lasagne.layers.TransformerLayer(
     downsample_factor=args.downsample)
 
 # Second SPN loc
-l_pool0_loc2 = pool(l_transform1, pool_size=(2, 2))
-l_conv0_loc2 = conv(l_pool0_loc2, num_filters=20, filter_size=(3, 3),
+#l_pool0_loc2 = pool(l_transform1, pool_size=(2, 2))
+l_conv0_loc2 = conv(l_transform1, num_filters=20, filter_size=(3, 3),
                    name='l_conv0_loc', W=W_ini)
-l_pool1_loc2 = pool(l_conv0_loc2, pool_size=(2, 2))
-l_conv1_loc2 = conv(l_pool1_loc2, num_filters=20, filter_size=(3, 3),
-                   name='l_conv1_loc', W=W_ini)
-l_conv1_loc2 = lasagne.layers.DropoutLayer(l_conv1_loc2, p=sh_drp)
-l_pool2_loc2 = pool(l_conv1_loc2, pool_size=(2, 2))
-l_conv2_loc2 = conv(l_pool2_loc2, num_filters=20, filter_size=(3, 3),
+#l_pool1_loc2 = pool(l_conv0_loc2, pool_size=(2, 2))
+#l_conv1_loc2 = conv(l_pool1_loc2, num_filters=20, filter_size=(3, 3),
+#                   name='l_conv1_loc', W=W_ini)
+#l_conv1_loc2 = lasagne.layers.DropoutLayer(l_conv1_loc2, p=sh_drp)
+#l_pool2_loc2 = pool(l_conv1_loc2, pool_size=(2, 2))
+l_conv2_loc2 = conv(l_conv0_loc2, num_filters=20, filter_size=(3, 3),
                    name='l_conv2_loc', W=W_ini)
+
+all_layers = lasagne.layers.get_all_layers(l_conv2_loc2)
+num_params = lasagne.layers.count_params(l_conv2_loc2)
+print("--Model info--")
+print("  number of parameters: %d" % num_params)
+print("  layer output shapes:")
+for layer in all_layers:
+    name = string.ljust(layer.__class__.__name__, 32)
+    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
 
 l_repeat_loc2 = Repeat(l_conv2_loc2, n=num_steps)
 l_gru2 = lasagne.layers.GRULayer(l_repeat_loc2, num_units=num_rnn_units,
@@ -199,14 +208,7 @@ l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
 #l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
 #                   name='l_conv2_out', W=W_ini)
 
-all_layers = lasagne.layers.get_all_layers(l_conv1_out)
-num_params = lasagne.layers.count_params(l_conv1_out)
-print("--Model info--")
-print("  number of parameters: %d" % num_params)
-print("  layer output shapes:")
-for layer in all_layers:
-    name = string.ljust(layer.__class__.__name__, 32)
-    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
+
 
 
 assert False
