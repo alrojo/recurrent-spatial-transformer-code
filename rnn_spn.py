@@ -189,8 +189,8 @@ l_transform2 = lasagne.layers.TransformerLayer(
 l_conv0_out = conv(l_transform2, num_filters=32, filter_size=(3, 3),
                    name='l_conv0_out', W=W_ini)
 
-l_pool1_out = pool(l_conv0_out, pool_size=(2, 2))
-l_drp1_out = lasagne.layers.DropoutLayer(l_pool1_out, p=sh_drp)
+#l_pool1_out = pool(l_conv0_out, pool_size=(2, 2))
+l_drp1_out = lasagne.layers.DropoutLayer(l_conv0_out, p=sh_drp)
 l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
                    name='l_conv1_out', W=W_ini)
 
@@ -198,22 +198,27 @@ l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
 #l_drp2_out = lasagne.layers.DropoutLayer(l_pool2_out, p=sh_drp)
 #l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
 #                   name='l_conv2_out', W=W_ini)
-all_layers = lasagne.layers.get_all_layers(l_conv1_out)
-num_params = lasagne.layers.count_params(l_conv1_out)
+#all_layers = lasagne.layers.get_all_layers(l_conv1_out)
+#num_params = lasagne.layers.count_params(l_conv1_out)
 print("--Model info--")
-print("  number of parameters: %d" % num_params)
-print("  layer output shapes:")
-for layer in all_layers:
-    name = string.ljust(layer.__class__.__name__, 32)
-    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
+#print("  number of parameters: %d" % num_params)
+#print("  layer output shapes:")
+#for layer in all_layers:
+#    name = string.ljust(layer.__class__.__name__, 32)
+#    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
 
+print "output shapes"
+print l_conv1_out.output_shape[1]
+assert False
+print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
+
+john = [-1] + list(l_conv1_out.output_shape[1])#*num_steps) + list(l_conv1_out.output_shape[-2:])
+print john
 assert False
 l_reshape2 = lasagne.layers.ReshapeLayer(
     l_conv1_out, [-1] + list(l_conv1_out.output_shape[1]*num_steps) +
                    list(l_conv1_out.output_shape[-2:]))
 
-print "output shapes"
-print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
 print lasagne.layers.get_output(l_reshape2, sym_x).eval({sym_x: Xt}).shape
 assert False
 
