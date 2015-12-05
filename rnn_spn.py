@@ -167,8 +167,7 @@ print l_conv2_out.output_shape
 print l_conv2_out.output_shape
 print l_conv2_out.output_shape
 
-#print lasagne.layers.get_output(l_conv3_out, sym_x).eval({sym_x: Xt}).shape
-#assert False
+
 
 l_class1 = lasagne.layers.DenseLayer(
     l_conv2_out, num_units=400,
@@ -183,11 +182,15 @@ l_out = l_lin_out
 
 all_layers = lasagne.layers.get_all_layers(l_out)
 num_params = lasagne.layers.count_params(l_out)
+print("--Model info--")
 print("  number of parameters: %d" % num_params)
 print("  layer output shapes:")
 for layer in all_layers:
     name = string.ljust(layer.__class__.__name__, 32)
     print("    %s %s" % (name, lasagne.layers.get_output_shape(layer)))
+
+print lasagne.layers.get_output(l_out, sym_x).eval({sym_x: Xt}).shape
+assert False
 
 output_train = lasagne.layers.get_output(
     l_out, sym_x, deterministic=False)
@@ -205,10 +208,10 @@ cost = T.mean(cost)
 all_params = lasagne.layers.get_all_params(l_out, trainable=True)
 trainable_params = lasagne.layers.get_all_params(l_out, trainable=True)
 
-
+print("Trainable parameters in model:")
 for p in trainable_params:
     print p.name
-
+print
 all_grads = T.grad(cost, trainable_params)
 all_grads = [T.clip(g, -1, 1) for g in all_grads]
 sh_lr = theano.shared(lasagne.utils.floatX(LR))
