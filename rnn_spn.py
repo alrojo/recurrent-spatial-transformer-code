@@ -178,7 +178,7 @@ l_A_net2 = lasagne.layers.DenseLayer(
     nonlinearity=lasagne.nonlinearities.identity)
 
 l_conv_to_transform2 = lasagne.layers.ReshapeLayer(
-    Repeat(l_transform1, n=num_steps), [-1] + list(l_dim.output_shape[-3:]))
+    Repeat(l_transform1, n=num_steps), [-1] + list(l_transform1.output_shape[-3:]))
 
 l_transform2 = lasagne.layers.TransformerLayer(
     incoming=l_conv_to_transform2,
