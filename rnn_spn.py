@@ -147,14 +147,10 @@ l_transform1 = lasagne.layers.TransformerLayer(
     downsample_factor=args.downsample)
 
 # Second SPN loc
-#l_pool0_loc2 = pool(l_transform1, pool_size=(2, 2))
-l_conv0_loc2 = conv(l_transform1, num_filters=20, filter_size=(3, 3),
+l_pool0_loc2 = pool(l_transform1, pool_size=(2, 2))
+l_conv0_loc2 = conv(l_pool0_loc2, num_filters=20, filter_size=(3, 3),
                    name='l_conv0_loc', W=W_ini)
-#l_pool1_loc2 = pool(l_conv0_loc2, pool_size=(2, 2))
-#l_conv1_loc2 = conv(l_pool1_loc2, num_filters=20, filter_size=(3, 3),
-#                   name='l_conv1_loc', W=W_ini)
-#l_conv1_loc2 = lasagne.layers.DropoutLayer(l_conv1_loc2, p=sh_drp)
-#l_pool2_loc2 = pool(l_conv1_loc2, pool_size=(2, 2))
+
 l_conv2_loc2 = conv(l_conv0_loc2, num_filters=20, filter_size=(3, 3),
                    name='l_conv2_loc', W=W_ini)
 
@@ -186,12 +182,12 @@ l_transform2 = lasagne.layers.TransformerLayer(
     downsample_factor=args.downsample)
 
 #Post SPN network
-l_conv0_out = conv(l_transform2, num_filters=32, filter_size=(3, 3),
+l_conv0_out = conv(l_transform2, num_filters=12, filter_size=(3, 3),
                    name='l_conv0_out', W=W_ini)
 
-#l_pool1_out = pool(l_conv0_out, pool_size=(2, 2))
-l_drp1_out = lasagne.layers.DropoutLayer(l_conv0_out, p=sh_drp)
-l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
+l_pool1_out = pool(l_conv0_out, pool_size=(2, 2))
+l_drp1_out = lasagne.layers.DropoutLayer(l_pool1_out, p=sh_drp)
+l_conv1_out = conv(l_drp1_out, num_filters=12, filter_size=(3, 3),
                    name='l_conv1_out', W=W_ini)
 
 #l_pool2_out = pool(l_conv1_out, pool_size=(2, 2))
