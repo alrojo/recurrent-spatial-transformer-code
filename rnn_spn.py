@@ -208,16 +208,12 @@ print("--Model info--")
 #    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
 
 print "output shapes"
-print l_conv1_out.output_shape[1]
-assert False
-print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
+d1 = l_conv1_out.output_shape[1]*3
+d2 = l_conv1_out.output_shape[2]
+d3 = l_conv1_out.output_shape[3]
 
-john = [-1] + list(l_conv1_out.output_shape[1])#*num_steps) + list(l_conv1_out.output_shape[-2:])
-print john
-assert False
 l_reshape2 = lasagne.layers.ReshapeLayer(
-    l_conv1_out, [-1] + list(l_conv1_out.output_shape[1]*num_steps) +
-                   list(l_conv1_out.output_shape[-2:]))
+    l_conv1_out, (-1, d1, [2], [3]))
 
 print lasagne.layers.get_output(l_reshape2, sym_x).eval({sym_x: Xt}).shape
 assert False
