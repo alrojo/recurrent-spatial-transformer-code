@@ -103,49 +103,90 @@ num_steps = y_train.shape[1]
 sym_x = T.tensor3()
 sym_y = T.imatrix()
 
-# setup network
+# Network input
 l_in = lasagne.layers.InputLayer((None, dim, dim))
 l_dim = lasagne.layers.DimshuffleLayer(l_in, (0, 'x', 1, 2))
 
-l_pool0_loc = pool(l_dim, pool_size=(2, 2))
-l_conv0_loc = conv(l_pool0_loc, num_filters=20, filter_size=(3, 3),
+# First SPN loc
+l_pool0_loc1 = pool(l_dim, pool_size=(2, 2))
+l_conv0_loc1 = conv(l_pool0_loc1, num_filters=20, filter_size=(3, 3),
                    name='l_conv0_loc', W=W_ini)
-l_pool1_loc = pool(l_conv0_loc, pool_size=(2, 2))
-l_conv1_loc = conv(l_pool1_loc, num_filters=20, filter_size=(3, 3),
+l_pool1_loc1 = pool(l_conv0_loc1, pool_size=(2, 2))
+l_conv1_loc1 = conv(l_pool1_loc1, num_filters=20, filter_size=(3, 3),
                    name='l_conv1_loc', W=W_ini)
-l_conv1_loc = lasagne.layers.DropoutLayer(l_conv1_loc, p=sh_drp)
-l_pool2_loc = pool(l_conv1_loc, pool_size=(2, 2))
-l_conv2_loc = conv(l_pool2_loc, num_filters=20, filter_size=(3, 3),
+l_conv1_loc1 = lasagne.layers.DropoutLayer(l_conv1_loc1, p=sh_drp)
+l_pool2_loc1 = pool(l_conv1_loc1, pool_size=(2, 2))
+l_conv2_loc1 = conv(l_pool2_loc1, num_filters=20, filter_size=(3, 3),
                    name='l_conv2_loc', W=W_ini)
 
-l_repeat_loc = Repeat(l_conv2_loc, n=num_steps)
-l_gru = lasagne.layers.GRULayer(l_repeat_loc, num_units=num_rnn_units,
+l_repeat_loc1 = Repeat(l_conv2_loc1, n=num_steps)
+l_gru1 = lasagne.layers.GRULayer(l_repeat_loc1, num_units=num_rnn_units,
                                 unroll_scan=True)
 
-l_shp = lasagne.layers.ReshapeLayer(l_gru, (-1, num_rnn_units))  # (96, 256)
+l_shp1 = lasagne.layers.ReshapeLayer(l_gru1, (-1, num_rnn_units))  # (96, 256)
 
-b = np.zeros((2, 3), dtype='float32')
-b[0, 0] = 1
-b[1, 1] = 1
+b1 = np.zeros((2, 3), dtype='float32')
+b1[0, 0] = 1
+b1[1, 1] = 1
 
 # From gru hid to A
-l_A_net = lasagne.layers.DenseLayer(
-    l_shp,
+l_A_net1 = lasagne.layers.DenseLayer(
+    l_shp1,
     num_units=6,
     name='A_net',
-    b=b.flatten(),
+    b1=b1.flatten(),
     W=lasagne.init.Constant(0.0),
     nonlinearity=lasagne.nonlinearities.identity)
 
-l_conv_to_transform = lasagne.layers.ReshapeLayer(
+l_conv_to_transform1 = lasagne.layers.ReshapeLayer(
     Repeat(l_dim, n=num_steps), [-1] + list(l_dim.output_shape[-3:]))
 
-l_transform = lasagne.layers.TransformerLayer(
-    incoming=l_conv_to_transform,
-    localization_network=l_A_net,
+l_transform1 = lasagne.layers.TransformerLayer(
+    incoming=l_conv_to_transform1,
+    localization_network=l_A_net1,
     downsample_factor=args.downsample)
 
-l_conv0_out = conv(l_transform, num_filters=32, filter_size=(3, 3),
+# Second SPN loc
+l_pool0_loc2 = pool(l_dim, pool_size=(2, 2))
+l_conv0_loc2 = conv(l_pool0_loc2, num_filters=20, filter_size=(3, 3),
+                   name='l_conv0_loc', W=W_ini)
+l_pool1_loc2 = pool(l_conv0_loc2, pool_size=(2, 2))
+l_conv1_loc2 = conv(l_pool1_loc2, num_filters=20, filter_size=(3, 3),
+                   name='l_conv1_loc', W=W_ini)
+l_conv1_loc2 = lasagne.layers.DropoutLayer(l_conv1_loc2, p=sh_drp)
+l_pool2_loc2 = pool(l_conv1_loc2, pool_size=(2, 2))
+l_conv2_loc2 = conv(l_pool2_loc2, num_filters=20, filter_size=(3, 3),
+                   name='l_conv2_loc', W=W_ini)
+
+l_repeat_loc2 = Repeat(l_conv2_loc2, n=num_steps)
+l_gru2 = lasagne.layers.GRULayer(l_repeat_loc2, num_units=num_rnn_units,
+                                unroll_scan=True)
+
+l_shp2 = lasagne.layers.ReshapeLayer(l_gru2, (-1, num_rnn_units))  # (96, 256)
+
+b2 = np.zeros((2, 3), dtype='float32')
+b2[0, 0] = 1
+b2[1, 1] = 1
+
+# From gru hid to A
+l_A_net2 = lasagne.layers.DenseLayer(
+    l_shp2,
+    num_units=6,
+    name='A_net',
+    b2=b2.flatten(),
+    W=lasagne.init.Constant(0.0),
+    nonlinearity=lasagne.nonlinearities.identity)
+
+l_conv_to_transform2 = lasagne.layers.ReshapeLayer(
+    Repeat(l_transform1, n=num_steps), [-1] + list(l_dim.output_shape[-3:]))
+
+l_transform2 = lasagne.layers.TransformerLayer(
+    incoming=l_conv_to_transform2,
+    localization_network=l_A_net2,
+    downsample_factor=args.downsample)
+
+#Post SPN network
+l_conv0_out = conv(l_transform1, num_filters=32, filter_size=(3, 3),
                    name='l_conv0_out', W=W_ini)
 
 l_pool1_out = pool(l_conv0_out, pool_size=(2, 2))
@@ -189,18 +230,21 @@ for layer in all_layers:
     name = string.ljust(layer.__class__.__name__, 32)
     print("    %s %s" % (name, lasagne.layers.get_output_shape(layer)))
 
-print lasagne.layers.get_output(l_out, sym_x).eval({sym_x: Xt}).shape
-assert False
-
 output_train = lasagne.layers.get_output(
     l_out, sym_x, deterministic=False)
 output_eval, l_A_eval = lasagne.layers.get_output(
-    [l_out, l_A_net], sym_x, deterministic=True)
-
+    [l_out, l_A_net1], sym_x, deterministic=True)
 
 
 # cost
 output_flat = T.reshape(output_train, (-1, num_classes))
+
+print "yshape"
+print(y_train.shape)
+print "output shape"
+print output_flat.eval({sym_x: Xt}).shape
+assert False
+
 cost = T.nnet.categorical_crossentropy(output_flat+TOL, sym_y.flatten())
 cost = T.mean(cost)
 
