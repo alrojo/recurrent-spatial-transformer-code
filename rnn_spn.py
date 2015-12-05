@@ -147,7 +147,7 @@ l_transform1 = lasagne.layers.TransformerLayer(
     downsample_factor=args.downsample)
 
 # Second SPN loc
-l_pool0_loc2 = pool(l_dim, pool_size=(2, 2))
+l_pool0_loc2 = pool(l_transform1, pool_size=(2, 2))
 l_conv0_loc2 = conv(l_pool0_loc2, num_filters=20, filter_size=(3, 3),
                    name='l_conv0_loc', W=W_ini)
 l_pool1_loc2 = pool(l_conv0_loc2, pool_size=(2, 2))
