@@ -198,40 +198,16 @@ l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
 #l_drp2_out = lasagne.layers.DropoutLayer(l_pool2_out, p=sh_drp)
 #l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
 #                   name='l_conv2_out', W=W_ini)
-#all_layers = lasagne.layers.get_all_layers(l_conv1_out)
-#num_params = lasagne.layers.count_params(l_conv1_out)
-print("--Model info--")
-#print("  number of parameters: %d" % num_params)
-#print("  layer output shapes:")
-#for layer in all_layers:
-#    name = string.ljust(layer.__class__.__name__, 32)
-#    print("    %s %s" % (name, lasagne.layers.get_output(layer, sym_x).eval({sym_x: Xt}).shape))
 
-print "output shapes"
 d1 = l_conv1_out.output_shape[1]*3
-d2 = l_conv1_out.output_shape[2]
-d3 = l_conv1_out.output_shape[3]
 
 l_reshape2 = lasagne.layers.ReshapeLayer(
     l_conv1_out, (-1, d1, [2], [3]))
 
-print lasagne.layers.get_output(l_reshape2, sym_x).eval({sym_x: Xt}).shape
-assert False
-
-
-#print l_pool0_out.output_shape
-print l_conv0_out.output_shape
-print l_conv1_out.output_shape
-print l_pool1_out.output_shape
-print l_pool2_out.output_shape
-print l_conv2_out.output_shape
-print l_conv2_out.output_shape
-print l_conv2_out.output_shape
-
-
+#print lasagne.layers.get_output(l_reshape2, sym_x).eval({sym_x: Xt}).shape
 
 l_class1 = lasagne.layers.DenseLayer(
-    l_conv2_out, num_units=400,
+    l_reshape2, num_units=400,
     W=W_class_init,
     name='class1')
 l_lin_out = lasagne.layers.DenseLayer(
