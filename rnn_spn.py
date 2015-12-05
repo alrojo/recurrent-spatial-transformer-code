@@ -194,10 +194,20 @@ l_drp1_out = lasagne.layers.DropoutLayer(l_pool1_out, p=sh_drp)
 l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
                    name='l_conv1_out', W=W_ini)
 
-l_pool2_out = pool(l_conv1_out, pool_size=(2, 2))
-l_drp2_out = lasagne.layers.DropoutLayer(l_pool2_out, p=sh_drp)
-l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
-                   name='l_conv2_out', W=W_ini)
+#l_pool2_out = pool(l_conv1_out, pool_size=(2, 2))
+#l_drp2_out = lasagne.layers.DropoutLayer(l_pool2_out, p=sh_drp)
+#l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
+#                   name='l_conv2_out', W=W_ini)
+
+l_reshape2 = lasagne.layers.ReshapeLayer(
+    l_conv1_out, ((None, l_conv1_out.output_shape[1]*num_steps,
+                   l_conv1_out.output_shape[2], l_conv1_out.output_shape[3])))
+
+print "output shapes"
+print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
+print lasagne.layers.get_output(l_reshape2, sym_x).eval({sym_x: Xt}).shape
+assert False
+
 
 #print l_pool0_out.output_shape
 print l_conv0_out.output_shape
@@ -238,12 +248,6 @@ output_eval, l_A_eval = lasagne.layers.get_output(
 
 # cost
 output_flat = T.reshape(output_train, (-1, num_classes))
-
-print "yshape"
-print(y_train.shape)
-print "output shape"
-print output_flat.eval({sym_x: Xt}).shape
-assert False
 
 cost = T.nnet.categorical_crossentropy(output_flat+TOL, sym_y.flatten())
 cost = T.mean(cost)
