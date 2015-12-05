@@ -134,7 +134,7 @@ l_A_net1 = lasagne.layers.DenseLayer(
     l_shp1,
     num_units=6,
     name='A_net',
-    b1=b1.flatten(),
+    b=b1.flatten(),
     W=lasagne.init.Constant(0.0),
     nonlinearity=lasagne.nonlinearities.identity)
 
@@ -173,7 +173,7 @@ l_A_net2 = lasagne.layers.DenseLayer(
     l_shp2,
     num_units=6,
     name='A_net',
-    b2=b2.flatten(),
+    b=b2.flatten(),
     W=lasagne.init.Constant(0.0),
     nonlinearity=lasagne.nonlinearities.identity)
 
@@ -199,9 +199,12 @@ l_conv1_out = conv(l_drp1_out, num_filters=32, filter_size=(3, 3),
 #l_conv2_out = conv(l_drp2_out, num_filters=32, filter_size=(3, 3),
 #                   name='l_conv2_out', W=W_ini)
 
+print l_conv1_out.output_shape
+print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
+assert false
 l_reshape2 = lasagne.layers.ReshapeLayer(
-    l_conv1_out, ((None, l_conv1_out.output_shape[1]*num_steps,
-                   l_conv1_out.output_shape[2], l_conv1_out.output_shape[3])))
+    l_conv1_out, [-1] + list(l_conv1_out.output_shape[1]*num_steps) +
+                   list(l_conv1_out.output_shape[-2:]))
 
 print "output shapes"
 print lasagne.layers.get_output(l_conv1_out, sym_x).eval({sym_x: Xt}).shape
