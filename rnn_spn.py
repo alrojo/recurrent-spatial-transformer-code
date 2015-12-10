@@ -221,7 +221,7 @@ l_list_out2 = []
 
 for l in l_list_in2:
     l_shuf2 = lasagne.layers.DimshuffleLayer(
-        l, ([0],[2],[3],[4]), name='l_shuf2')
+        l, (0, 2, 3, 4), name='l_shuf2')
     l_conv0_out = conv(
         l_shuf2, num_filters=12, filter_size=(3, 3),
         name='l_conv0_out', W=W_ini, pad='same')
