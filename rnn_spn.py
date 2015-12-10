@@ -109,19 +109,19 @@ l_dim = lasagne.layers.DimshuffleLayer(l_in, (0, 'x', 1, 2))
 
 # First SPN loc
 l_pool0_loc1 = pool(
-    l_dim, pool_size=(2, 2), name='l_pool0_loc1)
+    l_dim, pool_size=(2, 2), name='l_pool0_loc1')
 l_conv0_loc1 = conv(
     l_pool0_loc1, num_filters=20, filter_size=(3, 3),
                    name='l_conv0_loc', W=W_ini)
 l_pool1_loc1 = pool(
-    l_conv0_loc1, pool_size=(2, 2), name='l_pool1_loc1)
+    l_conv0_loc1, pool_size=(2, 2), name='l_pool1_loc1')
 l_conv1_loc1 = conv(
     l_pool1_loc1, num_filters=20, filter_size=(3, 3),
                    name='l_conv1_loc', W=W_ini)
 l_conv1_loc1 = lasagne.layers.DropoutLayer(l_conv1_loc1, p=sh_drp)
 l_pool2_loc1 = pool(
     lasagne.layers.DropoutLayer(l_conv1_loc1, p=sh_drp),
-    pool_size=(2, 2), name='l_pool2_loc1)
+    pool_size=(2, 2), name='l_pool2_loc1')
 l_conv2_loc1 = conv(
     l_pool2_loc1, num_filters=20, filter_size=(3, 3),
     name='l_conv2_loc', W=W_ini)
