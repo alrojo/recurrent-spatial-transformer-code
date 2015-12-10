@@ -232,7 +232,7 @@ for l in l_list_in2:
         num_filters=12, filter_size=(3, 3),
         name='l_conv1_out', W=W_ini)
     
-    l_list_out2.append(l_transform2)
+    l_list_out2.append(l_conv1_out)
 
 l_concat_out = lasagne.layers.ConcatLayer(
     l_list_out2, axis=1,
