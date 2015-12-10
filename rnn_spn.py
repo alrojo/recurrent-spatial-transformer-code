@@ -227,7 +227,7 @@ for l in l_list_in2:
         name='l_conv0_out', W=W_ini, pad='same')
     l_pool0_out = pool(
         l_conv0_out, pool_size=(2, 2),
-        name='l_pool0_out', pad='same')
+        name='l_pool0_out')
     l_conv1_out = conv(
         lasagne.layers.DropoutLayer(l_pool0_out, p=sh_drp),
         num_filters=12, filter_size=(3, 3),
