@@ -217,6 +217,15 @@ l_reshape2_b = lasagne.layers.ReshapeLayer(
 l_list_in2 = [lasagne.layers.SliceLayer(l_reshape2_b, slice(idx, idx+1), axis=1) for idx in range(num_steps)]
 l_list_out2 = []
 
+all_layers = lasagne.layers.get_all_layers(l_list_in2[0])
+num_params = lasagne.layers.count_params(l_list_in2[0])
+print("--Model info--")
+print("  number of parameters: %d" % num_params)
+print("  layer output shapes:")
+for layer in all_layers:
+    name = string.ljust(layer.__class__.__name__, 32)
+    print("    %s %s" % (name, lasagne.layers.get_output_shape(layer)))
+
 #Post SPN network
 
 for l in l_list_in2:
@@ -252,14 +261,7 @@ l_lin_out = lasagne.layers.DenseLayer(
     nonlinearity=lasagne.nonlinearities.softmax)
 l_out = l_lin_out
 
-all_layers = lasagne.layers.get_all_layers(l_out)
-num_params = lasagne.layers.count_params(l_out)
-print("--Model info--")
-print("  number of parameters: %d" % num_params)
-print("  layer output shapes:")
-for layer in all_layers:
-    name = string.ljust(layer.__class__.__name__, 32)
-    print("    %s %s" % (name, lasagne.layers.get_output_shape(layer)))
+
 
 output_train = lasagne.layers.get_output(
     l_out, sym_x, deterministic=False)
