@@ -213,16 +213,14 @@ l_reshape2_b = lasagne.layers.ReshapeLayer(
     l_reshape2_a, (-1, num_steps, [2], [3], [4]),
     name='l_reshape2_b')
     
-l_list_in2 = [lasagne.layers.SliceLayer(l_reshape2_b, slice(idx, idx+1), axis=1) for idx in range(num_steps)]
+l_list_in2 = [lasagne.layers.SliceLayer(l_reshape2_b, idx, axis=1) for idx in range(num_steps)]
 l_list_out2 = []
 
 #Post SPN network
 
 for l in l_list_in2:
-    l_shuf2 = lasagne.layers.DimshuffleLayer(
-        l, (0, 2, 3, 4), name='l_shuf2')
     l_conv0_out = conv(
-        l_shuf2, num_filters=12, filter_size=(3, 3),
+        l, num_filters=12, filter_size=(3, 3),
         name='l_conv0_out', W=W_ini, pad='same')
     l_pool0_out = pool(
         l_conv0_out, pool_size=(2, 2),
